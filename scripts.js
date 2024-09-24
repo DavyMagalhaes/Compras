@@ -1,12 +1,27 @@
-const item = document.getElementById("input-item"); // Corrigido 'imput item' para 'input-item'
-const botaoSalvarItem = document.getElementById("adicionar-item"); // Corrigido 'getelemner' para 'getElementById'
-const listaDeCompras = document.getElementById("lista-de-compras"); // Corrigido 'getelemner' para 'getElementById'
+const item = document.getElementById("input-item");
+const botaoSalvarItem = document.getElementById("adicionar-item");
+const listaDeCompras = document.getElementById("lista-de-compras");
+const listaComprados = document.getElementById("lista-comprados");
+const mensagemVazia = document.getElementById("mensagem-vazia");
 let contador = 0;
 
-botaoSalvarItem.addEventListener('click', adicionarItem); // Corrigido 'addeventlistener' para 'addEventListener'
+// Função para verificar se a lista de compras está vazia
+function verificarListaVazia() {
+    if (listaDeCompras.children.length === 0) {
+        mensagemVazia.style.display = 'block';
+    } else {
+        mensagemVazia.style.display = 'none';
+    }
+}
+
+// Verifica a lista ao carregar a página
+verificarListaVazia();
+
+botaoSalvarItem.addEventListener('click', adicionarItem);
 
 function adicionarItem(evento) {
     evento.preventDefault(); // Evitar refresh na página quando clicar no botão
+
     const itemDaLista = document.createElement("li");
     const containerItemLista = document.createElement("div");
     containerItemLista.classList.add("lista-item-container");
@@ -70,6 +85,9 @@ function adicionarItem(evento) {
     itemDaLista.appendChild(itemData);
     listaDeCompras.appendChild(itemDaLista);
 
+    // Verifica se a lista de compras está vazia
+    verificarListaVazia();
+
     // Função para marcar como comprado
     checkboxLabel.addEventListener('click', function (evento) {
         const checkboxInput = evento.currentTarget.querySelector('.input-checkbox');
@@ -79,10 +97,32 @@ function adicionarItem(evento) {
         if (checkboxInput.checked) {
             checkboxCustomizado.classList.add('checked');
             itemTitulo.style.textDecoration = 'line-through';
+
+            // Mover item para a lista de comprados
+            listaComprados.appendChild(itemDaLista);
         } else {
             checkboxCustomizado.classList.remove('checked');
             itemTitulo.style.textDecoration = 'none';
+
+            // Mover item de volta para a lista de compras
+            listaDeCompras.appendChild(itemDaLista);
         }
+
+        verificarListaVazia();
+    });
+
+    // Função para editar o item
+    botaoEditar.addEventListener('click', function () {
+        const novoNome = prompt('Editar item:', nomeDoItem.innerText);
+        if (novoNome !== null && novoNome.trim() !== '') {
+            nomeDoItem.innerText = novoNome;
+        }
+    });
+
+    // Função para remover o item
+    botaoRemover.addEventListener('click', function () {
+        itemDaLista.remove();
+        verificarListaVazia();
     });
 
     // Limpar o campo de input após adicionar
